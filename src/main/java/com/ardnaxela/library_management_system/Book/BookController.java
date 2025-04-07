@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin("*")
+@CrossOrigin
 public class BookController {
     private BookService bookService;
 
@@ -22,8 +22,15 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<List> getAllBooks() {
-        List<BookDTO> books = bookService.getAllBooks();
-        return new ResponseEntity<>(books, HttpStatus.OK);
+
+        try {
+            List<BookDTO> books = bookService.getAllBooks();
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 
     @GetMapping("{id}")
@@ -38,6 +45,13 @@ public class BookController {
         BookDTO savedBook = bookService.addBook(bookDTO);
 
         return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<List<BookDTO>> createBooks(@RequestBody List<BookDTO> bookDTOs) {
+        List<BookDTO> savedBooks = bookService.addBooks(bookDTOs);
+
+        return new ResponseEntity<>(savedBooks, HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")

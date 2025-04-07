@@ -2,6 +2,7 @@ package com.ardnaxela.library_management_system.Borrowing;
 
 import com.ardnaxela.library_management_system.Book.Book;
 import com.ardnaxela.library_management_system.Member.Member;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -30,16 +31,22 @@ public class Borrowing {
     @Column(name = "guest_email", length = 255)
     private String guestEmail; // Email of the guest member
 
-    @Column(nullable = false, length = 50)
-    private String status; // Status of the transaction (pending, approved, rejected)
+    @Column(name = "guest_phone_number", length = 15)
+    private String guestPhoneNumber; // Phone number of the guest member
+
+    @Column(length = 50)
+    private String status; // Status of the transaction (pending, approved, rejected, returned, overdue)
 
     @Column(name = "borrowed_date", nullable = false)
+//    @JsonFormat(pattern = "MM/dd/yyyy") // Format "MM/dd/YYYY"
     private LocalDateTime borrowedDate; // Date the book was borrowed
 
     @Column(name = "due_date", nullable = false)
+//    @JsonFormat(pattern = "MM/dd/yyyy") // Format "MM/dd/YYYY"
     private LocalDateTime dueDate; // Due date for returning the book
 
     @Column(name = "returned_date")
+//    @JsonFormat(pattern = "MM/dd/yyyy") // Format "MM/dd/YYYY"
     private LocalDateTime returnedDate; // Date the book was returned (nullable)
 
     @Column(name = "created_at", updatable = false)
@@ -61,4 +68,5 @@ public class Borrowing {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
 }

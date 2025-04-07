@@ -30,6 +30,9 @@ public class Member {
     @Column(nullable = false, name = "phone_number", length = 15)
     private String phoneNumber;
 
+    @Column(nullable = false)
+    private String address;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

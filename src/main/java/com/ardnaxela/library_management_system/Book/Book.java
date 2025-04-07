@@ -27,6 +27,9 @@ public class Book {
     @Column(name = "published_year")
     private Integer publishedYear;
 
+    @Column(length = 255)
+    private String category;
+
     @Column(nullable = false)
     private Integer quantity;
 

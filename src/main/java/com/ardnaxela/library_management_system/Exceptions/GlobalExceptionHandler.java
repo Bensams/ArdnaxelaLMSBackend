@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -14,8 +15,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<String> handleForbiddenException(ForbiddenException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<String> handleForbiddenException(ForbiddenException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN); // You can also return a custom response body object here (e.g., JSON with more details)
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
