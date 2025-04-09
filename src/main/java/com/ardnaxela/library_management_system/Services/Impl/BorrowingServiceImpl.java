@@ -20,14 +20,50 @@ import java.util.Optional;
 public class BorrowingServiceImpl implements BorrowingService {
     private final BorrowingRepository borrowingRepository;
 
+    // Add to BorrowingServiceImpl.java
+
+    @Override
+    public List<Borrowing> getActiveBorrowingsByGuest(String guestName, String guestEmail, String guestPhone) {
+        // Try to find by name first, then email, then phone
+        return borrowingRepository.findByGuestNameAndStatus(guestName, "BORROWED")
+                .map(List::of)
+                .map(list -> list.stream().map(b -> (Borrowing) b).toList())
+                .or(() -> borrowingRepository.findByGuestEmailAndStatus(guestEmail, "BORROWED")
+                        .map(List::of)
+                        .map(list -> list.stream().map(b -> (Borrowing) b).toList()))
+                .or(() -> borrowingRepository.findByGuestPhoneNumberAndStatus(guestPhone, "BORROWED")
+                        .map(List::of)
+                        .map(list -> list.stream().map(b -> (Borrowing) b).toList()))
+                .orElseThrow(() -> new EntityNotFoundException("No active borrowings found for this guest"));
+    }
+
+    @Override
+    public void returnBookByGuest(Long borrowingId, String guestIdentifier) {
+        Borrowing borrowing = borrowingRepository.findById(borrowingId)
+                .orElseThrow(() -> new EntityNotFoundException("Borrowing record not found"));
+
+        // Verify guest identity
+        if (!borrowing.getGuestName().equals(guestIdentifier) &&
+                !borrowing.getGuestEmail().equals(guestIdentifier) &&
+                !borrowing.getGuestPhoneNumber().equals(guestIdentifier)) {
+            throw new SecurityException("Guest information does not match borrowing record");
+        }
+
+        if ("RETURNED".equals(borrowing.getStatus())) {
+            throw new IllegalStateException("This book has already been returned");
+        }
+
+        borrowing.setReturnedDate(LocalDateTime.now());
+        borrowing.setStatus("RETURNED");
+        borrowingRepository.save(borrowing);
+    }
+
     @Override
     public void borrowBook(BorrowingDTO borrowingDTO) {
         // Check if the member exists or guest Name
         if (borrowingDTO.getMemberId() == null && borrowingDTO.getGuestName() == null) {
             throw new RuntimeException("Guest name must be provided.");
         }
-
-
 
         // Check if the book is available for borrowing
         Borrowing borrowing = BorrowingMapper.toEntity((BorrowingDTO) borrowingDTO);

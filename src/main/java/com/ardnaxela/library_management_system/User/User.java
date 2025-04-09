@@ -24,6 +24,7 @@ public class User {
     private String role; // e.g., "ROLE_USER", "ROLE_ADMIN", "ROLE_LIBRARIAN"
 
     // Reverse relationship for bi-directional mapping (optional)
-    @OneToOne(mappedBy = "user") // Or @OneToOne if it's a one-to-one mapping
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // Or @OneToOne if it's a one-to-one mapping
     private Member member; // Change to `Member member;` for a OneToOne relationship
+
 }

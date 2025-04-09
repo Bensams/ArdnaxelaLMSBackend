@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,8 +17,12 @@ public class NotificationDTO {
     private Long id;
     private String notificationType;
 
+    private Long bookID;
+    private Long userID;
     private Book book;
-    private User user;
 
     private String message;
+    private boolean isRead;
+    private LocalDateTime createdAt;
+
 }

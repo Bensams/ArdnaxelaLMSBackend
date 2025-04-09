@@ -3,6 +3,8 @@ package com.ardnaxela.library_management_system.Mapper;
 import com.ardnaxela.library_management_system.Member.Member;
 import com.ardnaxela.library_management_system.Member.MemberDTO;
 
+import java.time.format.DateTimeFormatter;
+
 public class MemberMapper {
 
     public static MemberDTO toDTO(Member member) {
@@ -15,6 +17,8 @@ public class MemberMapper {
         memberDTO.setEmail(member.getEmail());
         memberDTO.setPhoneNumber(member.getPhoneNumber());
         memberDTO.setAddress(member.getAddress());
+        memberDTO.setUsername(member.getUser().getUsername()); // Assuming Member has a User object
+        memberDTO.setCreatedAt(member.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         return memberDTO;
     }
 

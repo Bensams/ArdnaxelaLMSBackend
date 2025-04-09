@@ -9,7 +9,11 @@ public interface BorrowingService {
     void borrowBook(BorrowingDTO borrowingDTO);
 
     void returnBook(BorrowingDTO borrowingDTO);
-//
+
+    List<Borrowing> getActiveBorrowingsByGuest(String guestName, String guestEmail, String guestPhone);
+    void returnBookByGuest(Long borrowingId, String guestIdentifier);
+
+    //
 //    void renewBook(Long bookId, String username);
 //
 //    void reserveBook(Long bookId, String username);

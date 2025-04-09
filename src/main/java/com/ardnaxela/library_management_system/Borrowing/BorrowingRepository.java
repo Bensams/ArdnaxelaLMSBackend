@@ -25,4 +25,12 @@ public interface BorrowingRepository extends JpaRepository<Borrowing, Long> {
     @NotNull Optional<? extends Borrowing> findFirstByGuestNameAndStatusOrderByBorrowedDateDesc(String guestName, String borrowed);
 
     @NotNull Optional<? extends Borrowing> findFirstByMemberIdAndStatusOrderByBorrowedDateDesc(Long memberId, String borrowed);
+
+    <T> Optional<T> findByGuestNameAndStatus(String guestName, String borrowed);
+
+    @NotNull Optional<?> findByGuestEmailAndStatus(String guestEmail, String borrowed);
+
+    @NotNull Optional<?> findByGuestPhoneNumberAndStatus(String guestPhone, String borrowed);
+
+    boolean existsByMemberId(Long memberId);
 }

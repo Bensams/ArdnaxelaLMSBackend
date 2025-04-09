@@ -1,5 +1,6 @@
 package com.ardnaxela.library_management_system.User;
 
+import com.ardnaxela.library_management_system.Member.MemberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +15,5 @@ public class UserDTO {
     private String username;
     private String password;
     private String role; // e.g., "ADMIN", "MEMBER", "LIBRARIAN"
+    private MemberDTO memberDTO; // Assuming MemberDTO is a class that contains member-related information
 }

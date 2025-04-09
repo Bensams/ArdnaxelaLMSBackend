@@ -29,6 +29,10 @@ public class Notification {
 
     private String message;
 
+    // add read
+    @Column(name = "is_read", nullable = false)
+    private boolean read = false;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

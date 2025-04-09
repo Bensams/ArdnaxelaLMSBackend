@@ -15,11 +15,6 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Establish ManyToOne or OneToOne relationship with the User entity
-    @OneToOne // or @OneToOne based on your requirements
-    @JoinColumn(name = "user_id", nullable = false) // "user_id" is the foreign key column
-    private User user;
-
     @Column(nullable = false, length = 100)
     private String name;
 
@@ -37,6 +32,11 @@ public class Member {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    // Establish ManyToOne or OneToOne relationship with the User entity
+    @OneToOne // or @OneToOne based on your requirements
+    @JoinColumn(name = "user_id", referencedColumnName = "id") // "user_id" is the foreign key column
+    private User user;
 
     @PrePersist
     protected void onCreate() {
