@@ -1,5 +1,7 @@
 package com.ardnaxela.library_management_system.Services.Impl;
 
+import com.ardnaxela.library_management_system.Book.Book;
+import com.ardnaxela.library_management_system.Book.BookRepository;
 import com.ardnaxela.library_management_system.Borrowing.Borrowing;
 import com.ardnaxela.library_management_system.Borrowing.BorrowingDTO;
 import com.ardnaxela.library_management_system.Borrowing.BorrowingRepository;
@@ -19,22 +21,28 @@ import java.util.Optional;
 @AllArgsConstructor
 public class BorrowingServiceImpl implements BorrowingService {
     private final BorrowingRepository borrowingRepository;
+    private final BookRepository bookRepository;
 
     // Add to BorrowingServiceImpl.java
 
     @Override
-    public List<Borrowing> getActiveBorrowingsByGuest(String guestName, String guestEmail, String guestPhone) {
-        // Try to find by name first, then email, then phone
-        return borrowingRepository.findByGuestNameAndStatus(guestName, "BORROWED")
-                .map(List::of)
-                .map(list -> list.stream().map(b -> (Borrowing) b).toList())
-                .or(() -> borrowingRepository.findByGuestEmailAndStatus(guestEmail, "BORROWED")
-                        .map(List::of)
-                        .map(list -> list.stream().map(b -> (Borrowing) b).toList()))
-                .or(() -> borrowingRepository.findByGuestPhoneNumberAndStatus(guestPhone, "BORROWED")
-                        .map(List::of)
-                        .map(list -> list.stream().map(b -> (Borrowing) b).toList()))
-                .orElseThrow(() -> new EntityNotFoundException("No active borrowings found for this guest"));
+    public List<BorrowingDTO> getActiveBorrowingsByGuest(String guestName, String guestEmail, String guestPhone) {
+        if ((guestName == null || guestName.isBlank()) &&
+                (guestEmail == null || guestEmail.isBlank()) &&
+                (guestPhone == null || guestPhone.isBlank())) {
+            throw new IllegalArgumentException("At least one guest identifier (name, email, or phone) must be provided.");
+        }
+
+        return borrowingRepository.findByGuestName(guestName)
+                .filter(list -> !list.isEmpty())
+                .or(() -> borrowingRepository.findByGuestEmail(guestEmail)
+                        .filter(list -> !list.isEmpty()))
+                .or(() -> borrowingRepository.findByGuestPhoneNumber(guestPhone)
+                        .filter(list -> !list.isEmpty()))
+                .map(list -> list.stream()
+                        .map(BorrowingMapper::toDTO)
+                        .toList())
+                .orElseThrow(() -> new EntityNotFoundException("No active borrowings found for the provided guest."));
     }
 
     @Override
@@ -61,13 +69,17 @@ public class BorrowingServiceImpl implements BorrowingService {
     @Override
     public void borrowBook(BorrowingDTO borrowingDTO) {
         // Check if the member exists or guest Name
-        if (borrowingDTO.getMemberId() == null && borrowingDTO.getGuestName() == null) {
+        if (borrowingDTO.getGuestName() == null) {
             throw new RuntimeException("Guest name must be provided.");
         }
 
+        // Set the status to "PENDING"
+        // Set the borrowedDate to the current date
         // Check if the book is available for borrowing
-        Borrowing borrowing = BorrowingMapper.toEntity((BorrowingDTO) borrowingDTO);
-        if (isBookAvailable(borrowing.getId())) {
+        Borrowing borrowing = BorrowingMapper.toEntity(borrowingDTO);
+        borrowing.setStatus("PENDING");
+        borrowing.setBorrowedDate(LocalDateTime.now());
+        if (isBookAvailable(borrowing.getBook().getId())) {
             borrowingRepository.save(borrowing);
         } else {
             throw new RuntimeException("Book is not available for borrowing.");
@@ -85,45 +97,45 @@ public class BorrowingServiceImpl implements BorrowingService {
 //        borrowing.setReturnedDate(BorrowingMapper.toEntity(borrowingDTO).getReturnedDate());
 //        borrowing.setStatus("RETURNED");
 //    }
-@Override
-public void returnBook(BorrowingDTO borrowingDTO) {
-    // Validate input
-    if (borrowingDTO == null) {
-        throw new IllegalArgumentException("BorrowingDTO cannot be null");
-    }
-
-    // Find the borrowing record using the most specific identifier first
-    Borrowing borrowing = borrowingRepository.findById(borrowingDTO.getId())
-            .or(() -> borrowingRepository.findById(borrowingDTO.getId()))
-            .or(() -> {
-                if (borrowingDTO.getMemberId() != null) {
-                    return borrowingRepository.findFirstByMemberIdAndStatusOrderByBorrowedDateDesc(
-                            borrowingDTO.getMemberId(), "BORROWED");
-                }
-                return Optional.empty();
-            })
-            .or(() -> {
-                if (borrowingDTO.getGuestName() != null) {
-                    return borrowingRepository.findFirstByGuestNameAndStatusOrderByBorrowedDateDesc(
-                            borrowingDTO.getGuestName(), "BORROWED");
-                }
-                return Optional.empty();
-            })
-            .orElseThrow(() -> new EntityNotFoundException(
-                    "No active borrowing record found for the given criteria"));
-
-    // Validate the borrowing isn't already returned
-    if ("RETURNED".equals(borrowing.getStatus())) {
-        throw new IllegalStateException("This book has already been returned");
-    }
-
-    // Update the borrowing record
-    borrowing.setReturnedDate(LocalDateTime.now());  // or borrowingDTO.getReturnedDate() if you prefer
-    borrowing.setStatus("RETURNED");
-
-    // Save the updated record
-    borrowingRepository.save(borrowing);
-}
+//@Override
+//public void returnBook(BorrowingDTO borrowingDTO) {
+//    // Validate input
+//    if (borrowingDTO == null) {
+//        throw new IllegalArgumentException("BorrowingDTO cannot be null");
+//    }
+//
+//    // Find the borrowing record using the most specific identifier first
+//    Borrowing borrowing = borrowingRepository.findById(borrowingDTO.getId())
+//            .or(() -> borrowingRepository.findById(borrowingDTO.getId()))
+//            .or(() -> {
+//                if (borrowingDTO.getMemberId() != null) {
+//                    return borrowingRepository.findFirstByMemberIdAndStatusOrderByBorrowedDateDesc(
+//                            borrowingDTO.getMemberId(), "BORROWED");
+//                }
+//                return Optional.empty();
+//            })
+//            .or(() -> {
+//                if (borrowingDTO.getGuestName() != null) {
+//                    return borrowingRepository.findFirstByGuestNameAndStatusOrderByBorrowedDateDesc(
+//                            borrowingDTO.getGuestName(), "BORROWED");
+//                }
+//                return Optional.empty();
+//            })
+//            .orElseThrow(() -> new EntityNotFoundException(
+//                    "No active borrowing record found for the given criteria"));
+//
+//    // Validate the borrowing isn't already returned
+//    if ("RETURNED".equals(borrowing.getStatus())) {
+//        throw new IllegalStateException("This book has already been returned");
+//    }
+//
+//    // Update the borrowing record
+//    borrowing.setReturnedDate(LocalDateTime.now());  // or borrowingDTO.getReturnedDate() if you prefer
+//    borrowing.setStatus("RETURNED");
+//
+//    // Save the updated record
+//    borrowingRepository.save(borrowing);
+//}
 
     @Override
     public List<Borrowing> getBorrowingHistoryByUsername(String username) {
@@ -131,20 +143,20 @@ public void returnBook(BorrowingDTO borrowingDTO) {
         return List.of();
     }
 
-    @Override
-    public List<Borrowing> getBorrowingHistoryByGuest(String guestEmail, String guestPhoneNumber) {
-        // Find by guest email and phone number
-        return borrowingRepository.findByGuestEmail(guestEmail)
-                .or(() -> borrowingRepository.findByGuestPhoneNumber(guestPhoneNumber))
-                .map(b -> List.of((Borrowing) b))
-                .orElseThrow(() -> new RuntimeException("Borrowing record not found."));
-    }
+//    @Override
+//    public List<Borrowing> getBorrowingHistoryByGuest(String guestEmail, String guestPhoneNumber) {
+//        // Find by guest email and phone number
+//                return Optional.ofNullable(borrowingRepository.findByGuestEmail(guestEmail))
+//                .or(() -> Optional.ofNullable(borrowingRepository.findByGuestPhoneNumber(guestPhoneNumber)))
+//                .map(List::)
+//                .orElseThrow(() -> new RuntimeException("Borrowing record not found."));
+//    }
 
     @Override
     public boolean isBookAvailable(Long bookId) {
         // Check if the book is available for borrowing
-        Optional<Borrowing> borrowing = borrowingRepository.findByBookId(bookId);
-        return borrowing.isEmpty() || "RETURNED".equals(borrowing.get().getStatus());
+        Optional<Book> book = bookRepository.findById(bookId);
+        return book.get().getQuantity() > 0;
     }
 
 

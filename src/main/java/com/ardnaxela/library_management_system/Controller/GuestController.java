@@ -1,6 +1,7 @@
 package com.ardnaxela.library_management_system.Controller;
 
 import com.ardnaxela.library_management_system.Borrowing.Borrowing;
+import com.ardnaxela.library_management_system.Borrowing.BorrowingDTO;
 import com.ardnaxela.library_management_system.Services.BorrowingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,15 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/guest-returns")
+@RequestMapping("/api/guest")
 @RequiredArgsConstructor
 @CrossOrigin("*")
-public class GuestReturnController {
+public class GuestController {
 
     private final BorrowingService borrowingService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<Borrowing>> searchActiveBorrowings(
+    public ResponseEntity<List<BorrowingDTO>> searchActiveBorrowings(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phone) {
@@ -28,7 +29,7 @@ public class GuestReturnController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<Borrowing> borrowings = borrowingService.getActiveBorrowingsByGuest(
+        List<BorrowingDTO> borrowings = borrowingService.getActiveBorrowingsByGuest(
                 name != null ? name : "",
                 email != null ? email : "",
                 phone != null ? phone : "");
@@ -36,6 +37,14 @@ public class GuestReturnController {
         return ResponseEntity.ok(borrowings);
     }
 
+    @PostMapping("/borrow")
+    public ResponseEntity<String> borrowBook(@RequestBody BorrowingDTO borrowingDTO) {
+
+        borrowingService.borrowBook(borrowingDTO);
+        return ResponseEntity.ok("Book borrowed successfully");
+    }
+
+    // Planning on management to use
     @PostMapping("/return/{borrowingId}")
     public ResponseEntity<String> returnBook(
             @PathVariable Long borrowingId,

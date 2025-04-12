@@ -41,11 +41,17 @@ public class BorrowingMapper {
         }
         BorrowingDTO borrowingDTO = new BorrowingDTO();
         borrowingDTO.setId(borrowing.getId());
-        borrowingDTO.setMemberId(borrowing.getMember().getId());
+        // Check if member is null before accessing it
+        if (borrowing.getMember() != null) {
+            borrowingDTO.setMemberId(borrowing.getMember().getId());
+        } else {
+            borrowingDTO.setMemberId(null); // Set null or any default value
+        }
+
         borrowingDTO.setBookId(borrowing.getBook().getId());
         borrowingDTO.setGuestName(borrowing.getGuestName());
         borrowingDTO.setGuestEmail(borrowing.getGuestEmail());
-        borrowingDTO.setGuestPhoneNumber(borrowing.getGuestPhoneNumber());
+        borrowingDTO.setGuestPhone(borrowing.getGuestPhoneNumber());
         borrowingDTO.setStatus(borrowing.getStatus());
         borrowingDTO.setBorrowDate(DateTimeMapper.toString(borrowing.getBorrowedDate()));
         borrowingDTO.setDueDate(DateTimeMapper.toString(borrowing.getDueDate()));
@@ -73,7 +79,7 @@ public class BorrowingMapper {
         }
         borrowing.setGuestName(borrowingDTO.getGuestName());
         borrowing.setGuestEmail(borrowingDTO.getGuestEmail());
-        borrowing.setGuestPhoneNumber(borrowingDTO.getGuestPhoneNumber());
+        borrowing.setGuestPhoneNumber(borrowingDTO.getGuestPhone());
         borrowing.setStatus(borrowingDTO.getStatus());
         borrowing.setBorrowedDate(DateTimeMapper.toLocalDateTime(borrowingDTO.getBorrowDate()));
         borrowing.setDueDate(DateTimeMapper.toLocalDateTime(borrowingDTO.getDueDate()));

@@ -3,6 +3,7 @@ package com.ardnaxela.library_management_system.Controller;
 import com.ardnaxela.library_management_system.Notification.NotificationDTO;
 import com.ardnaxela.library_management_system.Services.NotificationService;
 import com.ardnaxela.library_management_system.User.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,13 +13,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/notifications")
+@RequiredArgsConstructor
 public class NotificationController {
 
     private final NotificationService notificationService;
-
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
 
     @GetMapping
     public ResponseEntity<List<NotificationDTO>> getUserNotifications() {

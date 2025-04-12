@@ -8,11 +8,11 @@ import java.util.List;
 public interface BorrowingService {
     void borrowBook(BorrowingDTO borrowingDTO);
 
-    void returnBook(BorrowingDTO borrowingDTO);
+  //  void returnBook(BorrowingDTO borrowingDTO);
 
-    List<Borrowing> getActiveBorrowingsByGuest(String guestName, String guestEmail, String guestPhone);
-    void returnBookByGuest(Long borrowingId, String guestIdentifier);
-
+    List<BorrowingDTO> getActiveBorrowingsByGuest(String guestName, String guestEmail, String guestPhone);
+ void returnBookByGuest(Long borrowingId, String guestIdentifier);
+//  void returnBookByGuest(Long borrowingId, String guestIdentifier);
     //
 //    void renewBook(Long bookId, String username);
 //
@@ -20,11 +20,11 @@ public interface BorrowingService {
 //
 //    void cancelReservation(Long bookId, String username);
     List<Borrowing> getBorrowingHistoryByUsername(String username);
-    List<Borrowing> getBorrowingHistoryByGuest(String guestEmail, String guestPhoneNumber);
+//    List<Borrowing> getBorrowingHistoryByGuest(String guestEmail, String guestPhoneNumber);
 //
-    boolean isBookAvailable(Long bookId);
-//
+     boolean isBookAvailable(Long bookId);
+
 //    boolean isBookReserved(Long bookId, String username);
-//
-    boolean isBookBorrowedByUser(BorrowingDTO borrowingDTO);
+
+     boolean isBookBorrowedByUser(BorrowingDTO borrowingDTO);
 }

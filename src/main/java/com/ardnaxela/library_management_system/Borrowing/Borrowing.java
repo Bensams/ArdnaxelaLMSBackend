@@ -5,8 +5,11 @@ import com.ardnaxela.library_management_system.Member.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Iterator;
 
 @Data
 @Entity
@@ -35,7 +38,7 @@ public class Borrowing {
     private String guestPhoneNumber; // Phone number of the guest member
 
     @Column(length = 50)
-    private String status; // Status of the transaction (pending, approved, rejected, returned, overdue)
+    private String status = "pending"; // Status of the transaction (pending, approved, rejected, returned, overdue, cancelled)
 
     @Column(name = "borrowed_date", nullable = false)
 //    @JsonFormat(pattern = "MM/dd/yyyy") // Format "MM/dd/YYYY"

@@ -47,6 +47,8 @@ public class UserController {
         return new ResponseEntity<>(updatedMemberDTO, HttpStatus.OK);
     }
 
+    // TODO: Implement borrow book method for user and validate token
+
 //    @GetMapping("/{userId}/books")
 //    @PreAuthorize("isAuthenticated() && #userId == principal.id")
 //    public ResponseEntity<List<BorrowingDTO>> getUserBooks(
