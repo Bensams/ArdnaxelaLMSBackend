@@ -20,8 +20,8 @@ public class Notification {
     @JoinColumn(name = "user_id") // "user_id" is the foreign key column
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "book_id", nullable =false)
+    @ManyToOne
+    @JoinColumn(name = "book_id")
     private Book book;
 
     @Column(name = "notification_type",nullable = false, length = 100)

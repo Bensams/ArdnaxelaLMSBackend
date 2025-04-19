@@ -3,37 +3,10 @@ package com.ardnaxela.library_management_system.Mapper;
 import com.ardnaxela.library_management_system.Book.Book;
 import com.ardnaxela.library_management_system.Borrowing.Borrowing;
 import com.ardnaxela.library_management_system.Borrowing.BorrowingDTO;
+import com.ardnaxela.library_management_system.DTO.BorrowingDetailsDTO;
 import com.ardnaxela.library_management_system.Member.Member;
 
 public class BorrowingMapper {
-
-    // Add your mapping methods here
-    // For example, you can create a method to convert Borrowing entity to BorrowingDTO
-    // and vice versa.
-
-    // Example:
-    // public BorrowingDTO toDto(Borrowing borrowing) {
-    //     if (borrowing == null) {
-    //         return null;
-    //     }
-    //     BorrowingDTO dto = new BorrowingDTO();
-    //     dto.setId(borrowing.getId());
-    //     dto.setMemberId(borrowing.getMember().getId());
-    //     dto.setBookId(borrowing.getBook().getId());
-    //     dto.setBorrowDate(borrowing.getBorrowDate());
-    //     dto.setReturnDate(borrowing.getReturnDate());
-    //     return dto;
-    // }
-//    private Long id;
-//    private Long bookId;
-//    private Long memberId;
-//    private String guestName; // For guest users
-//    private String guestEmail; // For guest users
-//    private String guestPhoneNumber; // For guest users
-//    private String status; // e.g., "BORROWED", "RETURNED", "OVERDUE", PENDING, CANCELLED
-//    private String borrowDate;
-//    private String dueDate;
-//    private String returnedDate;
 
     public static BorrowingDTO toDTO(Borrowing borrowing) {
         if (borrowing == null) {
@@ -41,14 +14,13 @@ public class BorrowingMapper {
         }
         BorrowingDTO borrowingDTO = new BorrowingDTO();
         borrowingDTO.setId(borrowing.getId());
-        // Check if member is null before accessing it
-        if (borrowing.getMember() != null) {
-            borrowingDTO.setMemberId(borrowing.getMember().getId());
-        } else {
-            borrowingDTO.setMemberId(null); // Set null or any default value
-        }
 
-        borrowingDTO.setBookId(borrowing.getBook().getId());
+        // Set book ID instead of full BookDTO
+        borrowingDTO.setBookId(borrowing.getBook() != null ? borrowing.getBook().getId() : null);
+
+        // Set member ID instead of full Member
+        borrowingDTO.setMemberId(borrowing.getMember() != null ? borrowing.getMember().getId() : null);
+
         borrowingDTO.setGuestName(borrowing.getGuestName());
         borrowingDTO.setGuestEmail(borrowing.getGuestEmail());
         borrowingDTO.setGuestPhone(borrowing.getGuestPhoneNumber());
@@ -60,6 +32,36 @@ public class BorrowingMapper {
         return borrowingDTO;
     }
 
+    // Add this to your BorrowingMapper.java
+    public static BorrowingDetailsDTO toDetailsDTO(Borrowing borrowing) {
+        if (borrowing == null) {
+            return null;
+        }
+
+        BorrowingDetailsDTO dto = new BorrowingDetailsDTO();
+        dto.setId(borrowing.getId());
+
+        // Map book information
+        if (borrowing.getBook() != null) {
+            dto.setBook(BookMapper.toBookDTO(borrowing.getBook()));
+        }
+
+        // Map member information
+        if (borrowing.getMember() != null) {
+            dto.setMember(MemberMapper.toDTO(borrowing.getMember()));
+        }
+
+        dto.setGuestName(borrowing.getGuestName());
+        dto.setGuestEmail(borrowing.getGuestEmail());
+        dto.setGuestPhone(borrowing.getGuestPhoneNumber());
+        dto.setStatus(borrowing.getStatus());
+        dto.setBorrowDate(DateTimeMapper.toString(borrowing.getBorrowedDate()));
+        dto.setDueDate(DateTimeMapper.toString(borrowing.getDueDate()));
+        dto.setReturnedDate(DateTimeMapper.toString(borrowing.getReturnedDate()));
+
+        return dto;
+    }
+
     public static Borrowing toEntity(BorrowingDTO borrowingDTO) {
         if (borrowingDTO == null) {
             return null;
@@ -67,16 +69,19 @@ public class BorrowingMapper {
 
         Borrowing borrowing = new Borrowing();
         borrowing.setId(borrowingDTO.getId());
-        if (borrowingDTO.getMemberId() != null) { // Check if memberId is not null
+
+        if (borrowingDTO.getMemberId() != null) {
             Member member = new Member();
             member.setId(borrowingDTO.getMemberId());
             borrowing.setMember(member);
         }
-        if (borrowingDTO.getBookId() != null) { // Check if bookId is not null
+
+        if (borrowingDTO.getBookId() != null) {
             Book book = new Book();
             book.setId(borrowingDTO.getBookId());
             borrowing.setBook(book);
         }
+
         borrowing.setGuestName(borrowingDTO.getGuestName());
         borrowing.setGuestEmail(borrowingDTO.getGuestEmail());
         borrowing.setGuestPhoneNumber(borrowingDTO.getGuestPhone());
@@ -84,7 +89,6 @@ public class BorrowingMapper {
         borrowing.setBorrowedDate(DateTimeMapper.toLocalDateTime(borrowingDTO.getBorrowDate()));
         borrowing.setDueDate(DateTimeMapper.toLocalDateTime(borrowingDTO.getDueDate()));
         borrowing.setReturnedDate(DateTimeMapper.toLocalDateTime(borrowingDTO.getReturnedDate()));
-
 
         return borrowing;
     }

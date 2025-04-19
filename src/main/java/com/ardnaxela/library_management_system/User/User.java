@@ -27,4 +27,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // Or @OneToOne if it's a one-to-one mapping
     private Member member; // Change to `Member member;` for a OneToOne relationship
 
+    @Column(name = "email_notifications_enabled")
+    private boolean emailNotificationsEnabled = true;
+
+    @Column(name = "sms_notifications_enabled")
+    private boolean smsNotificationsEnabled = false;
 }

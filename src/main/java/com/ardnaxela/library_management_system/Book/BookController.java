@@ -2,9 +2,15 @@ package com.ardnaxela.library_management_system.Book;
 
 import com.ardnaxela.library_management_system.Mapper.BookMapper;
 import com.ardnaxela.library_management_system.Services.BookService;
+import com.ardnaxela.library_management_system.User.User;
+import com.ardnaxela.library_management_system.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,11 +19,13 @@ import java.util.List;
 @RequestMapping("/api/books")
 @CrossOrigin
 public class BookController {
+    private final UserRepository userRepository;
     private BookService bookService;
 
     @Autowired
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, UserRepository userRepository) {
         this.bookService = bookService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -41,10 +49,10 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO) {
+    public ResponseEntity<?> createBook(@RequestBody BookDTO bookDTO) {
         BookDTO savedBook = bookService.addBook(bookDTO);
 
-        return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
+        return new ResponseEntity<>("Book Added Successfully!", HttpStatus.CREATED);
     }
 
     @PostMapping("/bulk")
@@ -55,15 +63,36 @@ public class BookController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<BookDTO> updateBook(@PathVariable("id") Long bookId,
+    public ResponseEntity<?> updateBook(@PathVariable("id") Long bookId,
                                               @RequestBody BookDTO updatedBook) {
-        BookDTO bookDTO = bookService.updateBook(bookId, updatedBook);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User currentUser = userRepository.findByUsername(username).orElse(null);
 
-        return new ResponseEntity<>(bookDTO, HttpStatus.OK);
+        if (!currentUser.getRole().contains("LIBRARIAN") && !currentUser.getRole().contains("ADMIN")) {
+            throw new AccessDeniedException("Permission denied");
+        }
+
+        bookService.updateBook(bookId, updatedBook);
+
+        return new ResponseEntity<>("Book Updated Successfuly!", HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteBook(@PathVariable("id") Long bookId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User currentUser = userRepository.findByUsername(username).orElse(null);
+
+        if (!currentUser.getRole().contains("LIBRARIAN") && !currentUser.getRole().contains("ADMIN")) {
+            throw new AccessDeniedException("Permission denied");
+        }
+//
+//        // Check if the user has admin role
+//        if (!authentication.getAuthorities().stream()
+//                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+//            return new ResponseEntity<>("You don't have access to this", HttpStatus.FORBIDDEN);
+//        }
         bookService.deleteBook(bookId);
 
         return ResponseEntity.ok("Book deleted successfully!");

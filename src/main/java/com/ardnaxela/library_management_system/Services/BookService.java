@@ -22,4 +22,6 @@ public interface BookService  {
     BookDTO updateBook(Long id, BookDTO bookDTO);
 
     void deleteBook(Long id);
+
+    void notifyAllUsersAboutNewBook(Book book);
 }

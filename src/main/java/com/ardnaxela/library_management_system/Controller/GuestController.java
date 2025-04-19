@@ -2,6 +2,7 @@ package com.ardnaxela.library_management_system.Controller;
 
 import com.ardnaxela.library_management_system.Borrowing.Borrowing;
 import com.ardnaxela.library_management_system.Borrowing.BorrowingDTO;
+import com.ardnaxela.library_management_system.DTO.BorrowingDetailsDTO;
 import com.ardnaxela.library_management_system.Services.BorrowingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class GuestController {
     private final BorrowingService borrowingService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<BorrowingDTO>> searchActiveBorrowings(
+    public ResponseEntity<List<BorrowingDetailsDTO>> searchActiveBorrowings(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phone) {
@@ -29,7 +30,7 @@ public class GuestController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<BorrowingDTO> borrowings = borrowingService.getActiveBorrowingsByGuest(
+        List<BorrowingDetailsDTO> borrowings = borrowingService.getActiveBorrowingsByGuest(
                 name != null ? name : "",
                 email != null ? email : "",
                 phone != null ? phone : "");

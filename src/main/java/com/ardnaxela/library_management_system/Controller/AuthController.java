@@ -9,7 +9,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +42,7 @@ public class AuthController {
             );
 
             final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-            String jwt = jwtUtils.generateToken(userDetails.getUsername());
+            String jwt = jwtUtils.generateToken(userDetails);
 
             return ResponseEntity.ok(new JwtResponse(jwt));
 
@@ -63,6 +65,21 @@ public class AuthController {
         memberDTO.setEmail(signupDTO.getEmail());
         // Hash the password and save the user
         return userDetailsService.createUser(userDTO, memberDTO);
+    }
+
+    @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
+        // Convert the signupDTO to UserDTO
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if the user has admin role
+        if (!authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        return new ResponseEntity<>(userDetailsService.addUser(userDTO), HttpStatus.CREATED);
     }
 }
 

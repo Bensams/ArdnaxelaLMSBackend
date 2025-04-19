@@ -5,11 +5,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtils {
@@ -30,11 +34,31 @@ public class JwtUtils {
     }
 
     // Generate a JWT token
-    public String generateToken(String username) {
+//    public String generateToken(String username) {
+//        return Jwts.builder()
+//                .subject(username)
+//                .issuedAt(new Date())
+//                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+//                .signWith(key)
+//                .compact();
+//    }
+
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", userDetails.getUsername());
+
+        // Add SINGLE role (extract first authority)
+        String role = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("ROLE_MEMBER"); // Default role if none
+
+        claims.put("role", role); // Store as string, not list
+
         return Jwts.builder()
-                .subject(username)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key)
                 .compact();
     }

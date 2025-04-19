@@ -14,13 +14,17 @@ public class NotificationMapper {
 
         NotificationDTO notificationDTO = new NotificationDTO();
         notificationDTO.setId(notification.getId());
-        notificationDTO.setBookID(notification.getBook().getId());
-        notificationDTO.setUserID(notification.getUser().getId());
+        if (notification.getBook() != null) {
+            notificationDTO.setBookID(notification.getBook().getId());
+        }
+        if (notification.getUser() != null) {
+            notificationDTO.setUserID(notification.getUser().getId());
+        }
         notificationDTO.setNotificationType(notification.getNotificationType());
         notificationDTO.setMessage(notification.getMessage());
         notificationDTO.setRead(notification.isRead());
         notificationDTO.setCreatedAt(notification.getCreatedAt());
-        notificationDTO.setBook(notification.getBook());
+        notificationDTO.setBook(BookMapper.toBookDTO(notification.getBook()));
 
         return notificationDTO;
 
@@ -46,7 +50,7 @@ public class NotificationMapper {
         notification.setNotificationType(notificationDTO.getNotificationType());
         notification.setMessage(notificationDTO.getMessage());
         notification.setRead(notificationDTO.isRead());
-        notification.setBook(notificationDTO.getBook());
+        notification.setBook(BookMapper.toBookEntity(notificationDTO.getBook()));
 
         return notification;
     }

@@ -49,4 +49,5 @@ public class Member {
         updatedAt = LocalDateTime.now();
     }
 
+
 }

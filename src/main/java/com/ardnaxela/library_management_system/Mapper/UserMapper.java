@@ -15,6 +15,7 @@ public class UserMapper {
         userDTO.setUsername(user.getUsername());
         userDTO.setPassword(user.getPassword());
         userDTO.setRole(user.getRole());
+        userDTO.setMemberDTO(user.getMember() != null ? MemberMapper.toDTO(user.getMember()) : null);
         return userDTO;
     }
 
@@ -28,6 +29,8 @@ public class UserMapper {
         user.setUsername(userDTO.getUsername());
         user.setPassword(userDTO.getPassword());
         user.setRole(userDTO.getRole());
+        user.setMember(userDTO.getMemberDTO() != null ? MemberMapper.toEntity(userDTO.getMemberDTO()) : null);
+
         return user;
     }
 }

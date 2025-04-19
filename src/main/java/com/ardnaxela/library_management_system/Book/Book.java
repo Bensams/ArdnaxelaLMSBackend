@@ -20,8 +20,8 @@ public class Book {
     @Column(nullable = false, length = 255)
     private String author;
 
-    @Column(nullable = false, length = 13, unique = true) // ISBN-13 is 13 digits long and unique
-    @Pattern(regexp = "^(\\d{3}-\\d{10}|\\d{13})$", message = "Invalid ISBN format. Use either '123-1234567891' or '1231234567891'.")
+    @Column(length = 13, unique = true, nullable = true) // Changed nullable to true
+    @Pattern(regexp = "^(\\d{3}-\\d{10}|\\d{13})?$", message = "Invalid ISBN format. Use either '123-1234567891' or '1231234567891' or leave empty.")
     private String isbn;
 
     @Column(name = "published_year")

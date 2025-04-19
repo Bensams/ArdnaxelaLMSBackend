@@ -3,10 +3,12 @@ package com.ardnaxela.library_management_system.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.*;
+import java.net.http.HttpClient;
 import java.security.cert.X509Certificate;
 
 @Configuration

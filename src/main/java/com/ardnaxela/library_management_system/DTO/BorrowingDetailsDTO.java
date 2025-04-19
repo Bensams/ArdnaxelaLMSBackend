@@ -1,7 +1,7 @@
-package com.ardnaxela.library_management_system.Borrowing;
+package com.ardnaxela.library_management_system.DTO;
 
 import com.ardnaxela.library_management_system.Book.BookDTO;
-import com.ardnaxela.library_management_system.Member.Member;
+import com.ardnaxela.library_management_system.Member.MemberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BorrowingDTO {
+public class BorrowingDetailsDTO {
     private Long id;
-    private Long bookId;  // Changed from BookDTO to Long ID
-    private Long memberId; // Changed from Member to Long ID
+    private BookDTO book;
+    private MemberDTO member;
     private String guestName;
     private String guestEmail;
     private String guestPhone;

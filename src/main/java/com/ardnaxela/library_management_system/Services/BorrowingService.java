@@ -2,29 +2,35 @@ package com.ardnaxela.library_management_system.Services;
 
 import com.ardnaxela.library_management_system.Borrowing.Borrowing;
 import com.ardnaxela.library_management_system.Borrowing.BorrowingDTO;
+import com.ardnaxela.library_management_system.DTO.BorrowingDetailsDTO;
 
 import java.util.List;
 
 public interface BorrowingService {
     void borrowBook(BorrowingDTO borrowingDTO);
 
-  //  void returnBook(BorrowingDTO borrowingDTO);
+    void approveBorrowing(Long borrowingId);
+    void rejectBorrowing(Long borrowingId);
 
-    List<BorrowingDTO> getActiveBorrowingsByGuest(String guestName, String guestEmail, String guestPhone);
- void returnBookByGuest(Long borrowingId, String guestIdentifier);
-//  void returnBookByGuest(Long borrowingId, String guestIdentifier);
-    //
-//    void renewBook(Long bookId, String username);
-//
-//    void reserveBook(Long bookId, String username);
-//
-//    void cancelReservation(Long bookId, String username);
-    List<Borrowing> getBorrowingHistoryByUsername(String username);
-//    List<Borrowing> getBorrowingHistoryByGuest(String guestEmail, String guestPhoneNumber);
-//
-     boolean isBookAvailable(Long bookId);
+    void changeStatus(Long borrowingId, String status);
 
-//    boolean isBookReserved(Long bookId, String username);
+    void sendBorrowingStatusNotification(Borrowing borrowing);
+
+    List<BorrowingDetailsDTO> getActiveBorrowingsByGuest(String guestName, String guestEmail, String guestPhone);
+    void returnBookByGuest(Long borrowingId, String guestIdentifier);
+
+    List<BorrowingDetailsDTO> getBorrowingHistoryByUsername(String username);
+
+    List<BorrowingDetailsDTO> getBorrowingHistoryByUsernameAndStatus(String username, String status);
+    boolean isBookAvailable(Long bookId);
 
      boolean isBookBorrowedByUser(BorrowingDTO borrowingDTO);
+
+    List<BorrowingDetailsDTO> getAllBorrowings();
+
+    void updateBorrowing(BorrowingDetailsDTO borrowingDetailsDTO);
+
+    void deleteBorrowing(Long borrowingID);
+
+    List<BorrowingDetailsDTO> getBorrowingsByStatus(String pending);
 }
